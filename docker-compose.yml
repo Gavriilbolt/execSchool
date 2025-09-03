@@ -1,0 +1,83 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/db-init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  execengine:
+    image: wiosna97/execengine-api:latest
+    privileged: true
+    tty: true
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./execengine.ini:/execengine.ini:ro
+    environment:
+      RABBITMQ_HOST: rabbitmq
+    healthcheck:
+      # поправим на фактический health эндпоинт, если он есть
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8000/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+      execengine:
+        condition: service_started
+    ports:
+      - "8001:8000"
+    command: gunicorn -c gunicorn.conf.py wsgi:app
+    restart: unless-stopped
+    # (для локальной разработки можно раскомментировать монтирование кода)
+    # volumes:
+    #   - .:/app:cached
+    volumes:
+      - .:/app:cached
+
+volumes:
+  pgdata:
+  rabbitmq_data:

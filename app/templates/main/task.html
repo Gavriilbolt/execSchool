@@ -1,0 +1,68 @@
+{% extends "_base.html" %}
+{% block title %}Задача{% endblock %}
+{% block content %}
+  {% if task %}
+    <article class="card">
+      <h2>{{ task.title }}</h2>
+      <pre class="desc">{{ task.description }}</pre>
+
+      <form id="solveForm">
+        <input type="hidden" name="task_id" value="{{ task.id }}">
+        <label for="code">Ваш код</label>
+        <textarea id="code" name="code" rows="14" spellcheck="false">{{ task.starter_code or '' }}</textarea>
+        <button type="submit">Отправить</button>
+      </form>
+
+      <div id="result" class="result" hidden></div>
+    </article>
+  {% else %}
+    <p>Задач пока нет.</p>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+const form = document.getElementById('solveForm');
+if (form) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const resBox = document.getElementById('result');
+    resBox.hidden = false;
+    resBox.textContent = 'Отправляем...';
+
+    try {
+      const resp = await fetch('/submit', {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin',
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      });
+
+      const text = await resp.text();
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch (e) {
+        // Пришёл HTML (например, редирект на /auth или страница ошибки)
+        if (resp.status === 401 || /<!doctype/i.test(text)) {
+          window.location.href = '/auth';
+          return;
+        }
+        throw new Error(`Сервер вернул не-JSON (HTTP ${resp.status}). ${text.slice(0,120)}`);
+      }
+
+      if (!resp.ok) {
+        throw new Error((data && data.error) || resp.statusText || `HTTP ${resp.status}`);
+      }
+
+      resBox.textContent = `Вердикт: ${data.verdict} · Очки: ${data.points}`;
+    } catch (err) {
+      resBox.textContent = 'Ошибка: ' + err.message;
+    }
+  });
+}
+</script>
+{% endblock %}
+

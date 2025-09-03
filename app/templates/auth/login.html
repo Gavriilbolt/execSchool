@@ -1,0 +1,13 @@
+{% extends "_base.html" %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+  <h2>Вход по коду</h2>
+  <form method="post" action="{{ url_for('auth.login') }}" class="card">
+    <label for="code">6 заглавных кириллических букв</label>
+    <input id="code" name="code" type="text" inputmode="latin" maxlength="6"
+           pattern="^[А-ЯЁ]{6}$" placeholder="ЖУРАВЛ" required
+           oninput="this.value=this.value.toUpperCase()">
+    <small>Например: ЖУРАВЛ. Допустимы только А–Я и Ё.</small>
+    <button type="submit">Войти</button>
+  </form>
+{% endblock %}

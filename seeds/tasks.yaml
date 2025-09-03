@@ -1,0 +1,15 @@
+blocks:
+  - id: 1
+    name: "Введение в Python"
+    order: 1
+tasks:
+  - id: 1
+    block_id: 1
+    title: "Hello, world!"
+    language: "python3"
+    max_points: 100
+    description: |
+      Напишите программу, печатающую "Hello, world!"
+    starter_code: |
+      # напишите ваш код ниже
+      pass
