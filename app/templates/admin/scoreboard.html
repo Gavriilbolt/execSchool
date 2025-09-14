@@ -1,10 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
+<!-- app/templates/admin/scoreboard.html -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Сводка по модулям</title></head>
 <body>
-$END$
+<h2>Сводка по модулям</h2>
+<form method="get" action="">
+<label>Группа:
+<select name="group_id">
+<option value="">(все)</option>
+{% for g in groups %}
+<option value="{{g.id}}" {% if selected_group==g.id %}selected{% endif %}>{{ g.name }}</option>
+{% endfor %}
+</select>
+</label>
+<label>Дисциплина:
+<select name="discipline_id">
+<option value="">(все)</option>
+{% for d in disciplines %}
+<option value="{{d.id}}" {% if selected_discipline==d.id %}selected{% endif %}>{{ d.name }}</option>
+{% endfor %}
+</select>
+</label>
+<button type="submit">Показать</button>
+</form>
+
+
+<table border="1" cellpadding="6" cellspacing="0">
+<thead>
+<tr>
+<th>Студент</th>
+{% for mid, mname in modules %}
+<th>{{ mname }}</th>
+{% endfor %}
+<th>Итого</th>
+</tr>
+</thead>
+<tbody>
+{% for s in students %}
+{% set total = 0 %}
+<tr>
+<td>{{ s.student_name }}</td>
+{% for mid, mname in modules %}
+{% set val = s.scores.get(mid, 0) %}
+{% set _ = (total.__setitem__(slice(None), total + val) if false else '') %}
+<td>{{ val }}</td>
+{% endfor %}
+<td>{{ s.scores.values()|sum }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
 </body>
 </html>

@@ -59,6 +59,8 @@ services:
       retries: 10
 
   web:
+    environment:
+      - ADMIN_TOKEN=${ADMIN_TOKEN}
     build:
       context: .
       dockerfile: docker/web.Dockerfile

@@ -1,0 +1,82 @@
+# --- Python / Flask ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Виртуальные окружения
+.venv/
+venv/
+env/
+ENV/
+pip-wheel-metadata/
+
+# Сборки/пакеты
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Тесты / покрытие
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.testmondata
+
+# Линтеры / типизация
+.mypy_cache/
+.pytype/
+.pyre/
+.ruff_cache/
+
+# Логи
+logs/
+*.log
+gunicorn*.log
+
+# --- Flask instance (секреты/локальные БД) ---
+instance/
+!instance/.gitkeep
+
+# Локальные конфиги/переменные окружения
+.env
+.env.*
+!.env.example
+.envrc
+*.local
+
+# Базы и дампы (локальные)
+*.sqlite
+*.sqlite3
+*.db
+dump.sql
+*.sql.gz
+
+# Alembic/Flask-Migrate: храним миграции, но игнорим мусор
+migrations/**/__pycache__/
+migrations/**/.pytest_cache/
+
+# --- Docker ---
+.docker/
+docker/*.local.yml
+docker/*-data/
+docker-compose.override.yml
+
+# --- OS / редакторы ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+Icon?
+*.iml
+.idea/
+.vscode/
+*.code-workspace
+
+# --- На будущее (если будет фронт) ---
+node_modules/
+npm-debug.log*
+yarn-error.log
+static/build/
+static/.webpack-cache/

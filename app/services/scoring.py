@@ -16,7 +16,7 @@ def score_batch(task, batch_result: dict) -> tuple[int, str, dict]:
     Ожидаем формат batch_result["results"] = [{ "stdout": <b64>, "status": {...}, ...}, ...]
     Если формата нет — ставим 'PENDING'.
     """
-    results = (batch_result or {}).get("results")
+    results = batch_result
     if not isinstance(results, list):
         return 0, "PENDING", batch_result or {}
 

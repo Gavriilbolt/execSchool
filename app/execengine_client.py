@@ -6,6 +6,8 @@ import requests
 from flask import current_app
 
 
+
+
 class ExecEngineClientV2:
     """
     Мини-клиент под ExecEngine v2:
@@ -99,7 +101,7 @@ class ExecEngineClientV2:
         sc_b64 = self._b64(source_code)
         for t in tests:
             sub = {
-                "language_id": int(language_id),
+                "language_id": int(71),
                 "source_code": sc_b64,
                 "stdin": self._b64(t.get("stdin")),
                 "expected_output": self._b64(t.get("expected_output")),
